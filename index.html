@@ -1,0 +1,186 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emails Page</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        h1, h3 {
+            text-align: center;
+        }
+        #container {
+            width: 60vmax;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: auto;
+            background-color: rgb(242, 242, 242);
+            padding: 20px 30px 20px 30px;
+            border-radius: 8px;
+            border: 1px solid rgba(128, 128, 128, 0.148);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.11);
+            margin-bottom: 50px;
+        }
+        p {
+            padding: 20px 30px 20px 30px;
+            border-radius: 8px;
+            background-color: rgb(247, 247, 247);
+            border: 1px solid rgba(128, 128, 128, 0.148);
+        }
+        #sendButton {
+            border-radius: 8px;
+            margin-top: 10px;
+            color: white;
+            font-size: medium;
+            letter-spacing: 1px;
+            background-color: rgb(44, 44, 44);
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        span {
+            display: flex;
+            justify-content: flex-end;
+        }
+        /* ---------------------------notification------------------------------ */
+        #notificationModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 80px 80px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 8px;
+            opacity: 0; /* Initial opacity set to 0 */
+            transition: opacity 0.5s ease-in-out; /* Transition effect on opacity */
+
+        }
+
+        #notificationOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.459);
+            z-index: 900;
+            opacity: 0; /* Initial opacity set to 0 */
+            transition: opacity 0.5s ease-in-out; /* Transition effect on opacity */
+        }
+
+        #notificationContent {
+            margin-bottom: 10px;
+        }
+
+        #closeModalButton {
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 10px;
+            color: white;
+            font-size: medium;
+            letter-spacing: 1px;
+            background-color: rgb(44, 44, 44);
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Email App</h1>
+    <div id="container">
+        <h3>Email Details</h3>
+        <p id="from-email"></p>
+        <p id="to-email"></p>
+        <h3>Email Contents</h3>
+        <p id="email-content"></p>
+        <span>
+            <button id="sendButton">Send Email</button>
+        </span>
+        <!-- Notification Modal -->
+        <div id="notificationOverlay" onclick="closeNotification()"></div>
+        <div id="notificationModal">
+            <div id="notificationContent"></div>
+            <button id="closeModalButton" onclick="closeNotification()">Close</button>
+        </div>
+    </div>
+    <script>
+        // script.js
+        function openNotification(message) {
+            document.getElementById('notificationContent').innerText = message;
+            document.getElementById('notificationOverlay').style.display = 'block';
+            document.getElementById('notificationModal').style.display = 'block';
+            // Set opacity to 1 for fade-in effect
+            setTimeout(() => {
+                document.getElementById('notificationOverlay').style.opacity = '1';
+                document.getElementById('notificationModal').style.opacity = '1';
+            }, 10);
+        }
+
+     
+
+        function closeNotification() {
+            document.getElementById('notificationOverlay').style.opacity = '0'; 
+            document.getElementById('notificationModal').style.opacity = '0'; // Set opacity to 0 for fade-out effect
+            setTimeout(() => {
+                document.getElementById('notificationOverlay').style.display = 'none';
+                document.getElementById('notificationModal').style.display = 'none';
+                document.getElementById('notificationOverlay').style.opacity = '1';
+                document.getElementById('notificationModal').style.opacity = '1'; // Reset opacity to 1 for the next opening
+            }, 500); // Wait for the transition to complete before hiding the modal
+}
+
+        console.log("Script loaded");
+
+        function fetchEmailContent() {
+            fetch("/emails")
+                .then((response) => response.text())
+                .then((data) => (document.getElementById("email-content").innerText = data))
+                .catch((error) => console.error("Error fetching email content:", error));
+        }
+
+        function fetchEmailDetails() {
+            fetch("/email-details")
+                .then((response) => response.json())
+                .then((details) => {
+                    document.getElementById("from-email").innerText = `From: ${details.from}`;
+                    document.getElementById("to-email").innerText = `To: ${details.to}`;
+                })
+                .catch((error) => console.error("Error fetching email details:", error));
+        }
+
+        // Function to send email
+        function sendEmail() {
+            fetch("/send-email")
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Error sending email: ${response.statusText}`);
+                    }
+                    return response.text(); // Return the response text for further processing
+                })
+                .then((message) => {
+                    openNotification(message); // Open the notification modal with the received message
+                    console.log("email Successfully Sended")
+                })
+                .catch((error) => {
+                    openNotification("Error sending email: " + error.message);
+                });
+        }
+
+        // Attach event listener to the button
+        document.getElementById("sendButton").addEventListener("click", sendEmail);
+
+        // Fetch email content and details on page load
+        fetchEmailContent();
+        fetchEmailDetails();
+
+        console.log("Script loaded last");
+    </script>
+</body>
+</html>

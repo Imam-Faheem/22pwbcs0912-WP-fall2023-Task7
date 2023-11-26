@@ -1,0 +1,9 @@
+
+Subject: Testing of my email app.
+
+Dear User,
+
+This is a sample email content. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit optio recusandae quidem, ea asperiores nisi, ipsam voluptas omnis pariatur ratione placeat amet distinctio reiciendis quae architecto blanditiis, nulla maiores non veritatis quia officia iure reprehenderit? Quod ex dolorum velit omnis, eaque cupiditate molestias praesentium libero, ab nisi 
+
+Regard,
+Hi Test
